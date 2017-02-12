@@ -264,7 +264,8 @@ class PretaggedCandidateExtractorUDF(UDF):
             if check_for_existing:
                 q = select([self.candidate_class.id])
                 for key, value in candidate_args.items():
-                    q = q.where(getattr(self.candidate_class, key) == value)
+                    if key.endswith('_id'):
+                        q = q.where(getattr(self.candidate_class, key) == value)
                 candidate_id = self.session.execute(q).first()
                 if candidate_id is not None:
                     continue

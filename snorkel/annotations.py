@@ -100,7 +100,7 @@ class Annotator(UDFRunner):
                                         annotation_key_class=annotation_key_class,
                                         f=f)
 
-    def apply(self, split, key_group=0, replace_key_set=True, **kwargs):
+    def apply(self, split, key_group=0, replace_key_set=True, cand_class=None, **kwargs):
 
         # If we are replacing the key set, make sure the reducer key id cache is cleared!
         if replace_key_set:
@@ -109,7 +109,14 @@ class Annotator(UDFRunner):
         # Get the cids based on the split, and also the count
         SnorkelSession = new_sessionmaker()
         session        = SnorkelSession()
-        cids_query     = session.query(Candidate.id).filter(Candidate.split == split)
+
+        # TODO: This is a quick workaround to fix an issue where rows get deleted from the cand_class table
+        # but not the Candidate table... have not yet reproduced, might not have been Snorkel at fault, should
+        # follow up on... either way this takes care of
+        if cand_class is not None:
+            cids_query = session.query(cand_class.id).filter(Candidate.split == split)
+        else:
+            cids_query = session.query(Candidate.id).filter(Candidate.split == split)
 
         # Note: In the current UDFRunner implementation, we load all these into memory and fill a
         # multiprocessing JoinableQueue with them before starting... so might as well load them here and pass in.

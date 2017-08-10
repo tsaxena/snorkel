@@ -1,5 +1,6 @@
 <img src="figs/logo_01.png" width="150"/>
 
+FONDUER VERSION BASED ON v0.6.2
 
 **_v0.6.2_**
 
